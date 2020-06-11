@@ -1,7 +1,7 @@
 
 ## about this fork
 
-Fixed some issues. Removed unued library.
+Fixed some issues. Removed unused library.
 Windows suppot
 
 ## about SecretFinder
