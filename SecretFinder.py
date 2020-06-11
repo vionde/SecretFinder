@@ -21,7 +21,6 @@ import requests
 import string 
 import random 
 from html import escape
-import urllib3
 import xml.etree.ElementTree
 
 # for read local file with file:// protocol
@@ -236,24 +235,19 @@ def parser_input(input):
 
 def html_save(output):
     ''' html output '''
-    hide = os.dup(1)
-    os.close(1)
-    os.open(os.devnull,os.O_RDWR)
     try:
-        text_file = open(args.output,"wb")
-        text_file.write(_template.replace('$$content$$',output).encode('utf-8'))
-        text_file.close()
+        with open(args.output, 'wb') as f:
+            f.write(_template.replace('$$content$$',output).encode('utf-8'))
         
         print('URL to access output: file://%s'%os.path.abspath(args.output))
-        file = 'file:///%s'%(os.path.abspath(args.output))
+        file = 'file://%s'%(os.path.abspath(args.output))
         if sys.platform == 'linux' or sys.platform == 'linux2':
             subprocess.call(['xdg-open',file])
         else:
             webbrowser.open(file) 
+    
     except Exception as err:
-        print('Output can\'t be saved in %s due to exception: %s'%(args.output,e))
-    finally:
-        os.dup2(hide,1)
+        print('Output can\'t be saved in %s due to exception: %s'%(args.output,err))
 
 def cli_output(matched):
     ''' cli output '''
@@ -381,8 +375,9 @@ if __name__ == "__main__":
         # validate regular exp
         try:
             r = re.search(args.regex,''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(10,50))))
-        except Exception as e:
+        except Exception as err:
             print('your python regex isn\'t valid')
+            print(err)
             sys.exit()
 
         _regex.update({
